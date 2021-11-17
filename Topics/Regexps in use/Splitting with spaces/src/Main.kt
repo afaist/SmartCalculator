@@ -1,0 +1,1 @@
+fun main() = readLine()!!.split(Regex(" +"), readLine()!!.toInt()).forEach { println(it) }

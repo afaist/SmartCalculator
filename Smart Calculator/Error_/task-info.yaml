@@ -1,0 +1,316 @@
+type: edu
+custom_name: Error!
+files:
+- name: src/calculator/Main.kt
+  visible: true
+  text: |
+    package calculator
+
+    fun main() {
+        println("Hello, World!")
+    }
+  learner_created: false
+- name: test/Test.java
+  visible: false
+  text: |
+    import org.hyperskill.hstest.stage.StageTest;
+    import org.hyperskill.hstest.testcase.CheckResult;
+    import org.hyperskill.hstest.testcase.TestCase;
+    import org.hyperskill.hstest.testing.TestedProgram;
+
+    import java.util.Arrays;
+    import java.util.List;
+
+    public class Test extends StageTest<String> {
+        @Override
+        public List<TestCase<String>> generate() {
+            return Arrays.asList(
+                new TestCase<String>().setDynamicTesting(() -> {
+
+                    TestedProgram main = new TestedProgram();
+
+                    // The base test suit that checks if the program
+                    // correctly responses to the commands and can stop
+                    main.start();
+
+                    // test of /help
+                    String output = main.execute("/help").trim();
+                    if (output.length() < 4) {
+                        return CheckResult.wrong(
+                            "It seems like there was no any \"help\" message.");
+                    }
+
+                    // input empty string
+                    output = main.execute("");
+                    if (output.length() != 0) {
+                        return CheckResult.wrong(
+                            "Incorrect response to an empty string. " +
+                            "The program should not print anything.");
+                    }
+
+                    // test of /exit
+                    output = main.execute("/exit").trim().toLowerCase();
+                    if (!output.startsWith("bye")) {
+                        return CheckResult.wrong(
+                            "Your program didn't print \"bye\" after entering \"/exit\".");
+                    }
+
+                    return new CheckResult(main.isFinished(),
+                        "Your program should exit after entering \"/exit\".");
+                }),
+
+                new TestCase<String>().setDynamicTesting(() -> {
+                    TestedProgram main = new TestedProgram();
+
+                    // The test suit that checks functionality of the previous steps
+                    main.start();
+
+                    // sum of positive numbers
+                    String output = main.execute("7 + 1 + 4").trim();
+                    if (!output.equals("12")) {
+                        return CheckResult.wrong("The program cannot sum more than two numbers.");
+                    }
+
+                    // sum mixed numbers & negative answer
+                    output = main.execute("23 - 17 - 13").trim();
+                    if (!output.equals("-7")) {
+                        return CheckResult.wrong(
+                            "Incorrect sum of positive and negative numbers.");
+                    }
+
+                    // testing a big amount of numbers
+                    output = main.execute("33 + 21 + 11 + 49 - 32 - 9 + 1 - 80 + 4").trim();
+                    if (!output.equals("-2")) {
+                        return CheckResult.wrong(
+                            "The program cannot process a large number of numbers.");
+                    }
+
+                    // input one number
+                    output = main.execute("101").trim();
+                    if (!output.equals("101")) {
+                        return CheckResult.wrong(
+                            "The program printed not the same number that was entered " +
+                            "(when one number is entered it is a valid expression).");
+                    }
+
+                    // input one negative number
+                    output = main.execute("-302").trim();
+                    if (!output.equals("-302")) {
+                        return CheckResult.wrong(
+                            "The program printed not the same number that was entered.");
+                    }
+
+                    // input empty string
+                    output = main.execute("");
+                    if (output.length() != 0) {
+                        return CheckResult.wrong(
+                            "Incorrect response to an empty string. " +
+                            "The program should not print anything.");
+                    }
+
+                    // the sum of the numbers is zero
+                    output = main.execute("10 - 7 - 3").trim();
+                    if (!output.equals("0")) {
+                        return CheckResult.wrong(
+                            "The problem when sum is equal to 0 has occurred.");
+                    }
+
+                    // test of multiple operations
+                    output = main.execute("5 --- 2 ++++++ 4 -- 2 ---- 1").trim();
+                    if (!output.equals("10")) {
+                        return CheckResult.wrong(
+                            "The program cannot process multiple operations " +
+                                "with several operators.");
+                    }
+
+                    // test of /exit
+                    output = main.execute("/exit").trim().toLowerCase();
+                    if (!output.startsWith("bye")) {
+                        return CheckResult.wrong(
+                            "Your program didn't print \"bye\" after entering \"/exit\".");
+                    }
+
+                    return new CheckResult(main.isFinished(),
+                        "Your program should exit after entering \"/exit\".");
+                }),
+
+                new TestCase<String>().setDynamicTesting(() -> {
+                    TestedProgram main = new TestedProgram();
+
+                    // A set of positive tests for this step
+                    main.start();
+
+                    // tests of invalid expressions
+                    String output = main.execute("123+").trim().toLowerCase();
+                    if (!output.startsWith("invalid")) {
+                        return CheckResult.wrong(
+                            "The program cannot process an invalid expression.");
+                    }
+
+                    output = main.execute("321-").trim().toLowerCase();
+                    if (!output.startsWith("invalid")) {
+                        return CheckResult.wrong(
+                            "The program cannot process an invalid expression.");
+                    }
+
+                    // input one number with plus in front of it
+                    output = main.execute("+7").trim();
+                    if (!output.equals("7")) {
+                        return CheckResult.wrong(
+                            "The program not correctly processes useless plus sign.");
+                    }
+
+                    // test of /exit
+                    output = main.execute("/exit").trim().toLowerCase();
+                    if (!output.startsWith("bye")) {
+                        return CheckResult.wrong(
+                            "Your program didn't print \"bye\" after entering \"/exit\".");
+                    }
+
+                    return new CheckResult(main.isFinished(),
+                        "Your program should exit after entering \"/exit\".");
+                }),
+                new TestCase<String>().setDynamicTesting(() -> {
+                    TestedProgram main = new TestedProgram();
+
+                    // A set of negative tests for this step
+                    main.start();
+
+                    // test of entering not numbers
+                    String output = main.execute("abc").trim().toLowerCase();
+                    if (!output.startsWith("invalid")) {
+                        return CheckResult.wrong(
+                            "The program should print \"Invalid expression\" " +
+                            "when not a numbers are entered");
+                    }
+
+                    output = main.execute("one + two + three").trim().toLowerCase();
+                    if (!output.startsWith("invalid")) {
+                        return CheckResult.wrong(
+                            "The program should print \"Invalid expression\" " +
+                            "when not a numbers are entered.");
+                    }
+
+                    // test of a nonexistent command
+                    output = main.execute("/go").trim().toLowerCase();
+                    if (!output.startsWith("unknown")) {
+                        return CheckResult.wrong(
+                            "The program should print \"Unknown command\" " +
+                            "when a nonexistent command is entered.");
+                    }
+
+                    // test of /exit
+                    output = main.execute("/exit").trim().toLowerCase();
+                    if (!output.startsWith("bye")) {
+                        return CheckResult.wrong(
+                            "Your program didn't print \"bye\" after entering \"/exit\".");
+                    }
+
+                    return new CheckResult(main.isFinished(),
+                        "Your program should exit after entering \"/exit\".");
+                })
+            );
+        }
+    }
+  learner_created: false
+- name: src/calculator/RecursiveParser.kt
+  visible: true
+  text: |-
+    package calculator
+
+    /**
+     * Recursive descent parser
+     * E -> T + E | T - E | T
+     * T -> F * T | F / T | F
+     * F -> N     | (E)
+     * Where:
+     * E - addition or subtraction operation
+     * T - multiplication or division operation
+     * F - parsing brackets
+     */
+    class RecursiveParser(private val tokens: Array<String>) {
+        private var pos = 0 // index of the current token
+        fun parse(): Double {
+            val result = additionalAndSubtraction()
+            check(pos == tokens.size) { "Error in expression at " + tokens[pos] }
+            return result
+        }
+
+        fun parseToInt(): Int = parse().toInt()
+
+        // E -> T±T±T±T± ... ±T
+        private fun additionalAndSubtraction(): Double {
+            // we find the first term
+            var first = multiplicationAndDivision()
+            while (pos < tokens.size) {
+                val operator = tokens[pos]
+                if (operator != "+" && operator != "-") {
+                    break
+                } else {
+                    pos++
+                }
+                // we find the second term
+                val second = multiplicationAndDivision()
+                if (operator == "+") {
+                    first += second
+                } else {
+                    first -= second
+                }
+            }
+            return first
+        }
+
+        // T -> F*/F*/F*/*/ ... */F
+        private fun multiplicationAndDivision(): Double {
+            // we find the first multiplier
+            var first = processingBrackets()
+            while (pos < tokens.size) {
+                val operator = tokens[pos]
+                if (operator != "*" && operator != "/") {
+                    break
+                } else {
+                    pos++
+                }
+
+                // find the second multiplier (divisor)
+                val second = processingBrackets()
+                if (operator == "*") {
+                    first *= second
+                } else {
+                    first /= second
+                }
+            }
+            return first
+        }
+
+        // F -> N | (E)
+        private fun processingBrackets(): Double {
+            val next = tokens[pos]
+            val result: Double
+            if (next == "(") {
+                pos++
+                // if the expression is in parentheses, then we recursively switch to processing a subexpression of type E
+                result = additionalAndSubtraction()
+                val closingBracket: String = if (pos < tokens.size) {
+                    tokens[pos]
+                } else {
+                    throw IllegalStateException("Unexpected end of expression")
+                }
+                if (pos < tokens.size && closingBracket == ")") {
+                    pos++
+                    return result
+                }
+                throw IllegalStateException("')' expected but $closingBracket")
+            }
+            pos++
+            // otherwise, the token must be a number
+            return next.toDouble()
+        }
+    }
+  learner_created: true
+feedback_link: https://hyperskill.org/projects/88/stages/490/implement#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Tue, 12 Oct 2021 09:40:27 UTC
+record: 5
